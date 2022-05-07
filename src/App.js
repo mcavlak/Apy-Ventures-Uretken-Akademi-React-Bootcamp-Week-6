@@ -1,23 +1,46 @@
-import logo from './logo.svg';
-import './App.css';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 
 function App() {
+  const [data, setData] = useState([])
+  const [loading, setLoading] = useState(false)
+
+  const fetchData = async () => {
+    setLoading(true)
+    try {
+      let res = await axios.get('https://jsonplaceholder.typicode.com/users');
+      if (res) {
+        setData(res.data)
+      }
+      setTimeout(() => {
+        setLoading(false)
+      }, 500);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {
+        loading ?
+          <p>Yükleniyor</p> :
+          data.length > 0 ?
+            <ul>
+              {
+                data.map((user) => (
+                  <li key={user.id}>
+                    {user.username + ": " + user.name}
+                  </li>
+                ))
+              }
+            </ul> :
+            <p>Sonuç bulunamadı!</p>
+      }
     </div>
   );
 }
